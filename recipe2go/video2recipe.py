@@ -1,5 +1,7 @@
 from speech_to_text import *
 from video2keyframes import *
+from pprint import pprint
+import json
 
 def video2recipe(video_id, videopath):
     dir = './extract_result/'
@@ -9,11 +11,13 @@ def video2recipe(video_id, videopath):
     counter = 1
 
     divided_steps = divide_steps(transcript_list, time_frame_list)
-    for step, keyframe in zip(divided_steps,keyframes):
-        #        print("This is step: " + str(counter))
-        #       print(step)
+    steps = []
+    for transcript, keyframe in zip(divided_steps,keyframes):
         counter += 1
-        keyframe["transcript"] = step
+        if transcript != "":
+            keyframe["transcript"] = transcript
+            steps.append(keyframe)
+
     for item in transcript_list:
         text = item['text']
         temp_text += text
@@ -34,14 +38,13 @@ def video2recipe(video_id, videopath):
     for item in equipments:
         if item in equipment_list:
             equipments_result.append(item)
-    for t, s in zip(res, ingredients_result):
-        t["transcript"] = s
     res = {"ingredients_result": ingredients_result,
            "equipments_result":equipments_result,
-           "steps": keyframes}
+           "steps": steps}
     return res
 
 
 
-res = video2recipe("ztl0gGVFoK0&t", 'demo.mp4')
-print(res)
+if __name__ == "__main__":
+    result = video2recipe("ztl0gGVFoK0&t", 'demo.mp4')
+    pprint(result)
